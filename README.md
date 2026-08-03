@@ -3,7 +3,7 @@
 A comprehensive Streamlit web application for analyzing historical Olympics data. This project includes dynamic visualizations and a **Machine Learning model** to predict an athlete's chances of winning a medal.
 
 ## 🚀 Live Demo
-Streamlit App: https://jyotimeena1024-olympics-data-analysis-app-dlmtmq.streamlit.app/
+Streamlit App: https://olympics-data-analysis-xbkcy5qvrqkh4x74exucrm.streamlit.app/
 
 ## ✨ Features
 1. **Medal Tally:** View country-wise and year-wise medal tallies.
