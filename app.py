@@ -15,7 +15,7 @@ st.sidebar.title("Olympics Analysis")
 st.sidebar.image('https://e7.pngegg.com/pngimages/1020/402/png-clipart-2024-summer-olympics-brand-circle-area-olympic-rings-olympics-logo-text-sport.png')
 user_menu = st.sidebar.radio(
     'Select an Option',
-    ('Medal Tally','Overall Analysis','Country-wise Analysis','Athlete wise Analysis')
+    ('Medal Tally','Overall Analysis','Country-wise Analysis','Athlete wise Analysis', 'Medal Predictor')
 )
 
 if user_menu == 'Medal Tally':
@@ -183,3 +183,37 @@ if user_menu == 'Athlete wise Analysis':
     fig = px.line(final, x="Year", y=["Male", "Female"])
     fig.update_layout(autosize=False, width=1000, height=600)
     st.plotly_chart(fig)
+
+if user_menu == 'Medal Predictor':
+    st.sidebar.header("Medal Predictor")
+    st.title("🥇 Predict Medal Probability")
+    st.markdown("Enter athlete details to predict their chances of winning a medal using Machine Learning (Logistic Regression).")
+    
+    # Train/Load model (cached to avoid retraining on every interaction)
+    @st.cache_resource
+    def get_model():
+        return helper.train_model(df)
+        
+    model = get_model()
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        age = st.number_input("Age", min_value=10, max_value=80, value=24)
+        weight = st.number_input("Weight (kg)", min_value=30.0, max_value=200.0, value=70.0)
+    with col2:
+        height = st.number_input("Height (cm)", min_value=120.0, max_value=250.0, value=175.0)
+        sex = st.selectbox("Sex", ["Male", "Female"])
+        
+    if st.button("Predict"):
+        prob = helper.predict_medal(model, age, height, weight, sex)
+        
+        st.subheader("Prediction Result:")
+        prob_percentage = round(prob * 100, 2)
+        
+        if prob_percentage > 50:
+            st.success(f"High Chances! 🎉 {prob_percentage}% probability of winning a medal.")
+            st.balloons()
+        elif prob_percentage > 15:
+            st.warning(f"Moderate Chances. ⚖️ {prob_percentage}% probability of winning a medal.")
+        else:
+            st.error(f"Low Chances. 📉 {prob_percentage}% probability of winning a medal.")
