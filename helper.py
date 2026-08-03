@@ -130,3 +130,52 @@ def men_vs_women(df):
     final.fillna(0, inplace=True)
 
     return final
+
+
+# -------------------------------------------------------------------------
+# MACHINE LEARNING MODEL (LOGISTIC REGRESSION)
+# -------------------------------------------------------------------------
+from sklearn.linear_model import LogisticRegression
+
+def train_model(df):
+    """
+    Trains a simple Logistic Regression model.
+    Features: Age, Height, Weight, Sex
+    Target: Medal (1 if won, 0 if not)
+    """
+    # Create a copy for ML to avoid changing the original dataframe
+    data = df[['Age', 'Height', 'Weight', 'Sex', 'Medal']].copy()
+    
+    # Drop rows where Age, Height, or Weight is missing
+    data = data.dropna(subset=['Age', 'Height', 'Weight', 'Sex'])
+    
+    # Convert Sex to numbers: Male = 1, Female = 0
+    data['Sex'] = data['Sex'].map({'M': 1, 'F': 0})
+    
+    # Convert Medal to numbers: 1 if won any medal, 0 if no medal
+    data['Medal'] = data['Medal'].notna().astype(int)
+    
+    # Features (X) and Target (y)
+    X = data[['Age', 'Height', 'Weight', 'Sex']]
+    y = data['Medal']
+    
+    # Train Logistic Regression
+    model = LogisticRegression()
+    model.fit(X, y)
+    
+    return model
+
+def predict_medal(model, age, height, weight, sex):
+    """
+    Predicts the probability of winning a medal.
+    """
+    # Convert inputs to the format model expects
+    sex_encoded = 1 if sex == 'Male' else 0
+    
+    # Create input array
+    input_data = [[age, height, weight, sex_encoded]]
+    
+    # Predict probability (returns [prob_no_medal, prob_yes_medal])
+    prob = model.predict_proba(input_data)[0][1] 
+    
+    return prob
